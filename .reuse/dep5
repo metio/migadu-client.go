@@ -1,0 +1,12 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: migadu-client.go
+Upstream-Contact: Sebastian Hoß <seb@hoß.de>
+Source: https://github.com/metio/migadu-client.go
+
+Files: .idea/*
+Copyright: The migadu-client.go Authors
+License: 0BSD
+
+Files: http/*
+Copyright: The migadu-client.go Authors
+License: 0BSD
