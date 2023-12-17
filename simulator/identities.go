@@ -41,11 +41,12 @@ func handleIdentities(t *testing.T, identities *[]model.Identity, forcedStatusCo
 		if r.Method == http.MethodDelete {
 			handleDeleteIdentity(w, r, t, identities, domain, localPart, id)
 		}
-		if r.Method == http.MethodGet && id != "" {
-			handleGetIdentity(w, r, t, identities, domain, localPart, id)
-		}
-		if r.Method == http.MethodGet && id == "" {
-			handleGetIdentities(w, r, t, identities, domain, localPart)
+		if r.Method == http.MethodGet {
+			if id == "" {
+				handleGetIdentities(w, r, t, identities, domain, localPart)
+			} else {
+				handleGetIdentity(w, r, t, identities, domain, localPart, id)
+			}
 		}
 	}
 }

@@ -40,11 +40,12 @@ func handleMailboxes(t *testing.T, mailboxes *[]model.Mailbox, forcedStatusCode 
 		if r.Method == http.MethodDelete {
 			handleDeleteMailbox(w, r, t, mailboxes, domain, localPart)
 		}
-		if r.Method == http.MethodGet && localPart != "" {
-			handleGetMailbox(w, r, t, mailboxes, domain, localPart)
-		}
-		if r.Method == http.MethodGet && localPart == "" {
-			handleGetMailboxes(w, r, t, mailboxes, domain)
+		if r.Method == http.MethodGet {
+			if localPart == "" {
+				handleGetMailboxes(w, r, t, mailboxes, domain)
+			} else {
+				handleGetMailbox(w, r, t, mailboxes, domain, localPart)
+			}
 		}
 	}
 }

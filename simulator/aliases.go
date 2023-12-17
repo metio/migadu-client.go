@@ -46,11 +46,12 @@ func handleAliases(t *testing.T, aliases *[]model.Alias, forcedStatusCode int) h
 		if r.Method == http.MethodDelete {
 			handleDeleteAlias(w, r, t, aliases, domain, localPart)
 		}
-		if r.Method == http.MethodGet && localPart != "" {
-			handleGetAlias(w, r, t, aliases, domain, localPart)
-		}
-		if r.Method == http.MethodGet && localPart == "" {
-			handleGetAliases(w, r, t, aliases, domain)
+		if r.Method == http.MethodGet {
+			if localPart == "" {
+				handleGetAliases(w, r, t, aliases, domain)
+			} else {
+				handleGetAlias(w, r, t, aliases, domain, localPart)
+			}
 		}
 	}
 }
