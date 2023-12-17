@@ -41,11 +41,12 @@ func handleRewriteRules(t *testing.T, rewrites *[]model.RewriteRule, forcedStatu
 		if r.Method == http.MethodDelete {
 			handleDeleteRewriteRule(w, r, t, rewrites, domain, slug)
 		}
-		if r.Method == http.MethodGet && slug != "" {
-			handleGetRewriteRule(w, r, t, rewrites, domain, slug)
-		}
-		if r.Method == http.MethodGet && slug == "" {
-			handleGetRewriteRules(w, r, t, rewrites, domain)
+		if r.Method == http.MethodGet {
+			if slug == "" {
+				handleGetRewriteRules(w, r, t, rewrites, domain)
+			} else {
+				handleGetRewriteRule(w, r, t, rewrites, domain, slug)
+			}
 		}
 	}
 }
