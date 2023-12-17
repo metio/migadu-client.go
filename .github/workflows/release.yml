@@ -34,8 +34,8 @@ jobs:
         if: steps.commits.outputs.count > 0
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.release.outputs.version }}
-          name: ${{ steps.release.outputs.version }}
+          tag_name: v${{ steps.release.outputs.version }}
+          name: v${{ steps.release.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: false
