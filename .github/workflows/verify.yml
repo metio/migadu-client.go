@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: The migadu-client.go Authors
+# SPDX-License-Identifier: 0BSD
+
+name: Verify Commits
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  verify:
+    name: Verify Commits
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v4
+      - id: setup_go
+        name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - id: lint
+        name: Lint Go Code
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+      - id: tests
+        name: Run Tests
+        run: go test -v -cover ./...
