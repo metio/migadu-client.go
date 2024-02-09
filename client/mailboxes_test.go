@@ -306,6 +306,34 @@ func TestMigaduClient_CreateMailbox(t *testing.T) {
 			},
 		},
 		{
+			name:   "password-handling-identity",
+			domain: "example.com",
+			state:  []model.Mailbox{},
+			send: &model.Mailbox{
+				Name:     "Some Name",
+				Password: "Sup3r_s3cr3T",
+				Identities: []model.Identity{
+					{
+						LocalPart: "identity",
+						Password:  "An0thEr_S3cR3t",
+					},
+				},
+			},
+			want: &model.Mailbox{
+				LocalPart:  "test",
+				DomainName: "example.com",
+				Address:    "test@example.com",
+				Name:       "Some Name",
+				Password:   "",
+				Identities: []model.Identity{
+					{
+						LocalPart: "identity",
+						Password:  "",
+					},
+				},
+			},
+		},
+		{
 			name:   "idna",
 			domain: "hoß.de",
 			state:  []model.Mailbox{},
@@ -463,6 +491,41 @@ func TestMigaduClient_UpdateMailbox(t *testing.T) {
 				Address:    "test@example.com",
 				Name:       "Different Name",
 				Password:   "",
+			},
+		},
+		{
+			name:      "add-identity",
+			domain:    "example.com",
+			localPart: "test",
+			state: []model.Mailbox{
+				{
+					LocalPart:  "test",
+					DomainName: "example.com",
+					Address:    "test@example.com",
+					Name:       "Some Name",
+				},
+			},
+			send: &model.Mailbox{
+				Name: "Some Name",
+				Identities: []model.Identity{
+					{
+						LocalPart: "other",
+						Password:  "An0thEr_S3cR3t",
+					},
+				},
+			},
+			want: &model.Mailbox{
+				LocalPart:  "test",
+				DomainName: "example.com",
+				Address:    "test@example.com",
+				Name:       "Some Name",
+				Password:   "",
+				Identities: []model.Identity{
+					{
+						LocalPart: "other",
+						Password:  "",
+					},
+				},
 			},
 		},
 		{
