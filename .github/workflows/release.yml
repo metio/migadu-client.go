@@ -28,7 +28,7 @@ jobs:
       - id: release
         name: Create Release Version
         if: steps.commits.outputs.count > 0
-        run: echo "version=$(date +'1.%Y%-m%-d.%-H%-M')" >> $GITHUB_OUTPUT
+        run: echo "version=$(date +'1.%Y%m%d.%-H%M')" >> $GITHUB_OUTPUT
       - id: create_release
         name: Create Release
         if: steps.commits.outputs.count > 0
