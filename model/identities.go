@@ -22,6 +22,7 @@ type Identity struct {
 	MayAccessPop3        bool   `json:"may_access_pop3"`
 	MayAccessManageSieve bool   `json:"may_access_managesieve"`
 	Password             string `json:"password"`
+	PasswordUse          string `json:"password_use"`
 	FooterActive         bool   `json:"footer_active"`
 	FooterPlainBody      string `json:"footer_plain_body"`
 	FooterHtmlBody       string `json:"footer_html_body"`
