@@ -122,6 +122,11 @@ func handleUpdateIdentity(w http.ResponseWriter, r *http.Request, t *testing.T, 
 		t.Errorf("Could not unmarshall identity")
 	}
 
+	if requestIdentity.Name == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	requestIdentity.DomainName = domain
 	requestIdentity.LocalPart = id
 	requestIdentity.Address = fmt.Sprintf("%s@%s", requestIdentity.LocalPart, domain)
@@ -157,6 +162,11 @@ func handleCreateIdentity(w http.ResponseWriter, r *http.Request, t *testing.T, 
 	err = json.Unmarshal(requestBody, &identity)
 	if err != nil {
 		t.Errorf("Could not unmarshall identity")
+	}
+
+	if identity.Name == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	identity.DomainName = domain
