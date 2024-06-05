@@ -5,6 +5,6 @@ module github.com/metio/migadu-client.go
 
 go 1.22
 
-require golang.org/x/net v0.25.0
+require golang.org/x/net v0.26.0
 
-require golang.org/x/text v0.15.0 // indirect
+require golang.org/x/text v0.16.0 // indirect
