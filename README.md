@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: The migadu-client.go Authors
 SPDX-License-Identifier: 0BSD
  -->
 
-# migadu-client.go [![Chat](https://img.shields.io/badge/matrix-%23talk.metio:matrix.org-brightgreen.svg?style=social&label=Matrix)](https://matrix.to/#/#talk.metio:matrix.org)
+# migadu-client.go
 
 Golang client for the [Migadu](https://www.migadu.com/api/) API.
 
