@@ -6,9 +6,7 @@
 package client
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/metio/migadu-client.go/idn"
 	"github.com/metio/migadu-client.go/model"
@@ -23,29 +21,8 @@ func (c *MigaduClient) GetMailboxes(ctx context.Context, domain string) (*model.
 	if err != nil {
 		return nil, fmt.Errorf("GetMailboxes: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes")
-	if err != nil {
-		return nil, fmt.Errorf("GetMailboxes: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
-	if err != nil {
-		return nil, fmt.Errorf("GetMailboxes: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("GetMailboxes: %w", err)
-	}
-
-	response := model.Mailboxes{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("GetMailboxes: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Mailboxes](ctx, c, "GetMailboxes", http.MethodGet, nil,
+		"domains", ascii, "mailboxes")
 }
 
 // GetMailbox returns specific mailbox
@@ -54,29 +31,8 @@ func (c *MigaduClient) GetMailbox(ctx context.Context, domain string, localPart 
 	if err != nil {
 		return nil, fmt.Errorf("GetMailbox: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
-	if err != nil {
-		return nil, fmt.Errorf("GetMailbox: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
-	if err != nil {
-		return nil, fmt.Errorf("GetMailbox: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("GetMailbox: %w", err)
-	}
-
-	response := model.Mailbox{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("GetMailbox: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Mailbox](ctx, c, "GetMailbox", http.MethodGet, nil,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart))
 }
 
 // CreateMailbox creates a new mailbox
@@ -85,52 +41,11 @@ func (c *MigaduClient) CreateMailbox(ctx context.Context, domain string, mailbox
 	if err != nil {
 		return nil, fmt.Errorf("CreateMailbox: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes")
-	if err != nil {
+	if err := mailboxListsToASCII(mailbox); err != nil {
 		return nil, fmt.Errorf("CreateMailbox: %w", err)
 	}
-
-	if mailbox != nil {
-		senderDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderDenyList)
-		if err != nil {
-			return nil, fmt.Errorf("CreateMailbox: %w", err)
-		}
-		mailbox.SenderDenyList = senderDenyListASCII
-		senderAllowListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderAllowList)
-		if err != nil {
-			return nil, fmt.Errorf("CreateMailbox: %w", err)
-		}
-		mailbox.SenderAllowList = senderAllowListASCII
-		recipientDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.RecipientDenyList)
-		if err != nil {
-			return nil, fmt.Errorf("CreateMailbox: %w", err)
-		}
-		mailbox.RecipientDenyList = recipientDenyListASCII
-	}
-
-	requestBody, err := json.Marshal(mailbox)
-	if err != nil {
-		return nil, fmt.Errorf("CreateMailbox: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return nil, fmt.Errorf("CreateMailbox: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("CreateMailbox: %w", err)
-	}
-
-	response := model.Mailbox{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("CreateMailbox: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Mailbox](ctx, c, "CreateMailbox", http.MethodPost, mailbox,
+		"domains", ascii, "mailboxes")
 }
 
 // UpdateMailbox updates an existing mailbox
@@ -139,52 +54,11 @@ func (c *MigaduClient) UpdateMailbox(ctx context.Context, domain string, localPa
 	if err != nil {
 		return nil, fmt.Errorf("UpdateMailbox: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
-	if err != nil {
+	if err := mailboxListsToASCII(mailbox); err != nil {
 		return nil, fmt.Errorf("UpdateMailbox: %w", err)
 	}
-
-	if mailbox != nil {
-		senderDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderDenyList)
-		if err != nil {
-			return nil, fmt.Errorf("UpdateMailbox: %w", err)
-		}
-		mailbox.SenderDenyList = senderDenyListASCII
-		senderAllowListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderAllowList)
-		if err != nil {
-			return nil, fmt.Errorf("UpdateMailbox: %w", err)
-		}
-		mailbox.SenderAllowList = senderAllowListASCII
-		recipientDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.RecipientDenyList)
-		if err != nil {
-			return nil, fmt.Errorf("UpdateMailbox: %w", err)
-		}
-		mailbox.RecipientDenyList = recipientDenyListASCII
-	}
-
-	requestBody, err := json.Marshal(mailbox)
-	if err != nil {
-		return nil, fmt.Errorf("UpdateMailbox: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodPut, reqURL, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return nil, fmt.Errorf("UpdateMailbox: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("UpdateMailbox: %w", err)
-	}
-
-	response := model.Mailbox{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("UpdateMailbox: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Mailbox](ctx, c, "UpdateMailbox", http.MethodPut, mailbox,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart))
 }
 
 // DeleteMailbox deletes an existing mailbox
@@ -193,27 +67,23 @@ func (c *MigaduClient) DeleteMailbox(ctx context.Context, domain string, localPa
 	if err != nil {
 		return nil, fmt.Errorf("DeleteMailbox: %w", err)
 	}
+	return do[model.Mailbox](ctx, c, "DeleteMailbox", http.MethodDelete, nil,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart))
+}
 
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
-	if err != nil {
-		return nil, fmt.Errorf("DeleteMailbox: %w", err)
+func mailboxListsToASCII(mailbox *model.Mailbox) error {
+	if mailbox == nil {
+		return nil
 	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqURL, http.NoBody)
-	if err != nil {
-		return nil, fmt.Errorf("DeleteMailbox: %w", err)
+	var err error
+	if mailbox.SenderDenyList, err = idn.ConvertEmailsToASCII(mailbox.SenderDenyList); err != nil {
+		return err
 	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("DeleteMailbox: %w", err)
+	if mailbox.SenderAllowList, err = idn.ConvertEmailsToASCII(mailbox.SenderAllowList); err != nil {
+		return err
 	}
-
-	response := model.Mailbox{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("DeleteMailbox: %w", err)
+	if mailbox.RecipientDenyList, err = idn.ConvertEmailsToASCII(mailbox.RecipientDenyList); err != nil {
+		return err
 	}
-
-	return &response, nil
+	return nil
 }
