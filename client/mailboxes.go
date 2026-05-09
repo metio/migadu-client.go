@@ -94,17 +94,17 @@ func (c *MigaduClient) CreateMailbox(ctx context.Context, domain string, mailbox
 	if mailbox != nil {
 		senderDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderDenyList)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("CreateMailbox: %w", err)
 		}
 		mailbox.SenderDenyList = senderDenyListASCII
 		senderAllowListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderAllowList)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("CreateMailbox: %w", err)
 		}
 		mailbox.SenderAllowList = senderAllowListASCII
 		recipientDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.RecipientDenyList)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("CreateMailbox: %w", err)
 		}
 		mailbox.RecipientDenyList = recipientDenyListASCII
 	}
@@ -148,17 +148,17 @@ func (c *MigaduClient) UpdateMailbox(ctx context.Context, domain string, localPa
 	if mailbox != nil {
 		senderDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderDenyList)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("UpdateMailbox: %w", err)
 		}
 		mailbox.SenderDenyList = senderDenyListASCII
 		senderAllowListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderAllowList)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("UpdateMailbox: %w", err)
 		}
 		mailbox.SenderAllowList = senderAllowListASCII
 		recipientDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.RecipientDenyList)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("UpdateMailbox: %w", err)
 		}
 		mailbox.RecipientDenyList = recipientDenyListASCII
 	}
