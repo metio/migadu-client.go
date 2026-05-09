@@ -15,6 +15,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -28,6 +29,12 @@ type MigaduClient struct {
 	token       string
 	userAgent   string
 	rateLimiter *rate.Limiter
+	retry       *retryConfig
+}
+
+type retryConfig struct {
+	maxRetries int
+	maxBackoff time.Duration
 }
 
 // Option is a functional option for configuring a MigaduClient.
@@ -56,6 +63,23 @@ func WithUserAgent(userAgent string) Option {
 	return func(c *MigaduClient) {
 		c.userAgent = userAgent
 	}
+}
+
+// WithRetry enables automatic retries for transient failures: network errors
+// and HTTP 429, 502, 503, and 504 responses. Up to maxRetries additional
+// attempts are made with exponential backoff (starting at 500ms, doubling
+// each attempt) capped at maxBackoff. When the server returns a Retry-After
+// header on a 429, that value is honored instead of the computed backoff.
+func WithRetry(maxRetries int, maxBackoff time.Duration) Option {
+	return func(c *MigaduClient) {
+		c.retry = &retryConfig{maxRetries: maxRetries, maxBackoff: maxBackoff}
+	}
+}
+
+// WithDefaultRetry enables retries with sensible defaults: 3 retries and a
+// 30-second cap on backoff.
+func WithDefaultRetry() Option {
+	return WithRetry(3, 30*time.Second)
 }
 
 // New creates a new MigaduClient
@@ -87,33 +111,126 @@ func New(endpoint, username, token *string, timeout time.Duration, opts ...Optio
 }
 
 func (c *MigaduClient) doRequest(req *http.Request) ([]byte, error) {
-	if c.rateLimiter != nil {
-		err := c.rateLimiter.Wait(req.Context())
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	req.SetBasicAuth(c.username, c.token)
 	req.Header.Set("User-Agent", c.userAgent)
 	req.Header.Add("Content-Type", "application/json")
 
+	maxAttempts := 1
+	if c.retry != nil {
+		maxAttempts += c.retry.maxRetries
+	}
+
+	var (
+		lastBody       []byte
+		lastStatus     int
+		lastErr        error
+		lastRetryAfter time.Duration
+	)
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		if attempt > 0 {
+			wait := computeBackoff(attempt, lastRetryAfter, c.retry.maxBackoff)
+			select {
+			case <-time.After(wait):
+			case <-req.Context().Done():
+				return nil, req.Context().Err()
+			}
+			if req.GetBody != nil {
+				fresh, err := req.GetBody()
+				if err != nil {
+					return nil, err
+				}
+				req.Body = fresh
+			}
+		}
+
+		if c.rateLimiter != nil {
+			if err := c.rateLimiter.Wait(req.Context()); err != nil {
+				return nil, err
+			}
+		}
+
+		body, status, retryAfter, err := c.attemptOnce(req)
+		if err != nil {
+			if c.retry == nil || !isNetworkRetryable(err) {
+				return nil, err
+			}
+			lastErr, lastBody, lastStatus, lastRetryAfter = err, nil, 0, 0
+			continue
+		}
+		if status == http.StatusOK {
+			return body, nil
+		}
+		if c.retry == nil || !isStatusRetryable(status) {
+			return nil, &RequestError{StatusCode: status, ResponseBody: body}
+		}
+		lastErr, lastBody, lastStatus, lastRetryAfter = nil, body, status, retryAfter
+	}
+
+	if lastErr != nil {
+		return nil, lastErr
+	}
+	return nil, &RequestError{StatusCode: lastStatus, ResponseBody: lastBody}
+}
+
+func (c *MigaduClient) attemptOnce(req *http.Request) ([]byte, int, time.Duration, error) {
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, 0, 0, err
 	}
 	defer res.Body.Close()
-
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, res.StatusCode, 0, err
 	}
+	return body, res.StatusCode, parseRetryAfter(res.Header.Get("Retry-After")), nil
+}
 
-	if res.StatusCode != http.StatusOK {
-		return nil, &RequestError{StatusCode: res.StatusCode, ResponseBody: body}
+func isNetworkRetryable(err error) bool {
+	return !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded)
+}
+
+func isStatusRetryable(status int) bool {
+	switch status {
+	case http.StatusTooManyRequests,
+		http.StatusBadGateway,
+		http.StatusServiceUnavailable,
+		http.StatusGatewayTimeout:
+		return true
 	}
+	return false
+}
 
-	return body, err
+func parseRetryAfter(header string) time.Duration {
+	if header == "" {
+		return 0
+	}
+	if seconds, err := strconv.Atoi(header); err == nil && seconds >= 0 {
+		return time.Duration(seconds) * time.Second
+	}
+	if t, err := http.ParseTime(header); err == nil {
+		if d := time.Until(t); d > 0 {
+			return d
+		}
+	}
+	return 0
+}
+
+func computeBackoff(attempt int, retryAfter, max time.Duration) time.Duration {
+	if retryAfter > 0 {
+		if retryAfter > max {
+			return max
+		}
+		return retryAfter
+	}
+	shift := attempt - 1
+	if shift > 30 {
+		shift = 30
+	}
+	backoff := 500 * time.Millisecond << shift
+	if backoff > max {
+		return max
+	}
+	return backoff
 }
 
 type RequestError struct {
