@@ -14,12 +14,15 @@ import (
 	"time"
 )
 
+const defaultUserAgent = "migadu-client.go"
+
 // MigaduClient holds all necessary information to interact with the Migadu API
 type MigaduClient struct {
 	httpClient  *http.Client
 	endpoint    string
 	username    string
 	token       string
+	userAgent   string
 	rateLimiter *rate.Limiter
 }
 
@@ -44,6 +47,13 @@ func WithDefaultRateLimit() Option {
 	return WithRateLimit(60, 2*time.Minute)
 }
 
+// WithUserAgent overrides the User-Agent header sent on every request.
+func WithUserAgent(userAgent string) Option {
+	return func(c *MigaduClient) {
+		c.userAgent = userAgent
+	}
+}
+
 // New creates a new MigaduClient
 func New(endpoint, username, token *string, timeout time.Duration, opts ...Option) (*MigaduClient, error) {
 	if username == nil {
@@ -58,6 +68,7 @@ func New(endpoint, username, token *string, timeout time.Duration, opts ...Optio
 		endpoint:   "https://api.migadu.com/v1/",
 		username:   *username,
 		token:      *token,
+		userAgent:  defaultUserAgent,
 	}
 
 	if endpoint != nil {
@@ -80,6 +91,7 @@ func (c *MigaduClient) doRequest(req *http.Request) ([]byte, error) {
 	}
 
 	req.SetBasicAuth(c.username, c.token)
+	req.Header.Set("User-Agent", c.userAgent)
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := c.httpClient.Do(req)
