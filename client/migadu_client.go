@@ -6,11 +6,15 @@
 package client
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"golang.org/x/time/rate"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -119,4 +123,42 @@ type RequestError struct {
 
 func (e *RequestError) Error() string {
 	return fmt.Sprintf("status: %d, body: %s", e.StatusCode, e.ResponseBody)
+}
+
+// do executes an authenticated request and decodes a JSON response of type T.
+// label is prefixed onto any returned error. If body is nil, no request body
+// is sent; otherwise body is JSON-encoded. pathSegments are joined onto the
+// endpoint via url.JoinPath; callers are responsible for url.PathEscape on
+// any user-controlled segments.
+func do[T any](ctx context.Context, c *MigaduClient, label, method string, body any, pathSegments ...string) (*T, error) {
+	reqURL, err := url.JoinPath(c.endpoint, pathSegments...)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", label, err)
+	}
+
+	var reader io.Reader = http.NoBody
+	if body != nil {
+		encoded, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", label, err)
+		}
+		reader = bytes.NewBuffer(encoded)
+	}
+
+	request, err := http.NewRequestWithContext(ctx, method, reqURL, reader)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", label, err)
+	}
+
+	responseBody, err := c.doRequest(request)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", label, err)
+	}
+
+	var result T
+	if err := json.Unmarshal(responseBody, &result); err != nil {
+		return nil, fmt.Errorf("%s: %w", label, err)
+	}
+
+	return &result, nil
 }

@@ -6,9 +6,7 @@
 package client
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/metio/migadu-client.go/model"
 	"golang.org/x/net/idna"
@@ -22,29 +20,8 @@ func (c *MigaduClient) GetIdentities(ctx context.Context, domain string, localPa
 	if err != nil {
 		return nil, fmt.Errorf("GetIdentities: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentities: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentities: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentities: %w", err)
-	}
-
-	response := model.Identities{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentities: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Identities](ctx, c, "GetIdentities", http.MethodGet, nil,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
 }
 
 // GetIdentity returns a specific identity
@@ -53,29 +30,8 @@ func (c *MigaduClient) GetIdentity(ctx context.Context, domain string, localPart
 	if err != nil {
 		return nil, fmt.Errorf("GetIdentity: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentity: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentity: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentity: %w", err)
-	}
-
-	response := model.Identity{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("GetIdentity: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Identity](ctx, c, "GetIdentity", http.MethodGet, nil,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
 }
 
 // CreateIdentity creates a new identity
@@ -84,34 +40,8 @@ func (c *MigaduClient) CreateIdentity(ctx context.Context, domain string, localP
 	if err != nil {
 		return nil, fmt.Errorf("CreateIdentity: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
-	if err != nil {
-		return nil, fmt.Errorf("CreateIdentity: %w", err)
-	}
-
-	requestBody, err := json.Marshal(identity)
-	if err != nil {
-		return nil, fmt.Errorf("CreateIdentity: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return nil, fmt.Errorf("CreateIdentity: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("CreateIdentity: %w", err)
-	}
-
-	response := model.Identity{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("CreateIdentity: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Identity](ctx, c, "CreateIdentity", http.MethodPost, identity,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
 }
 
 // UpdateIdentity updates an existing identity
@@ -120,34 +50,8 @@ func (c *MigaduClient) UpdateIdentity(ctx context.Context, domain string, localP
 	if err != nil {
 		return nil, fmt.Errorf("UpdateIdentity: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
-	if err != nil {
-		return nil, fmt.Errorf("UpdateIdentity: %w", err)
-	}
-
-	requestBody, err := json.Marshal(identity)
-	if err != nil {
-		return nil, fmt.Errorf("UpdateIdentity: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodPut, reqURL, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return nil, fmt.Errorf("UpdateIdentity: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("UpdateIdentity: %w", err)
-	}
-
-	response := model.Identity{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("UpdateIdentity: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Identity](ctx, c, "UpdateIdentity", http.MethodPut, identity,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
 }
 
 // DeleteIdentity deletes an existing identity
@@ -156,27 +60,6 @@ func (c *MigaduClient) DeleteIdentity(ctx context.Context, domain string, localP
 	if err != nil {
 		return nil, fmt.Errorf("DeleteIdentity: %w", err)
 	}
-
-	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
-	if err != nil {
-		return nil, fmt.Errorf("DeleteIdentity: %w", err)
-	}
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqURL, http.NoBody)
-	if err != nil {
-		return nil, fmt.Errorf("DeleteIdentity: %w", err)
-	}
-
-	responseBody, err := c.doRequest(request)
-	if err != nil {
-		return nil, fmt.Errorf("DeleteIdentity: %w", err)
-	}
-
-	response := model.Identity{}
-	err = json.Unmarshal(responseBody, &response)
-	if err != nil {
-		return nil, fmt.Errorf("DeleteIdentity: %w", err)
-	}
-
-	return &response, nil
+	return do[model.Identity](ctx, c, "DeleteIdentity", http.MethodDelete, nil,
+		"domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
 }
