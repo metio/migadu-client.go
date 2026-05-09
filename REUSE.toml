@@ -1,0 +1,16 @@
+version = 1
+SPDX-PackageName = "migadu-client.go"
+SPDX-PackageSupplier = "Sebastian Hoß <seb@hoß.de>"
+SPDX-PackageDownloadLocation = "https://github.com/metio/migadu-client.go"
+
+[[annotations]]
+path = ".idea/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "The migadu-client.go Authors"
+SPDX-License-Identifier = "0BSD"
+
+[[annotations]]
+path = "http/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "The migadu-client.go Authors"
+SPDX-License-Identifier = "0BSD"
