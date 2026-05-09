@@ -24,7 +24,7 @@ func (c *MigaduClient) GetAliases(ctx context.Context, domain string) (*model.Al
 		return nil, fmt.Errorf("GetAliases: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "aliases")
 	if err != nil {
 		return nil, fmt.Errorf("GetAliases: %w", err)
 	}
@@ -55,7 +55,7 @@ func (c *MigaduClient) GetAlias(ctx context.Context, domain string, localPart st
 		return nil, fmt.Errorf("GetAlias: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
 	if err != nil {
 		return nil, fmt.Errorf("GetAlias: %w", err)
 	}
@@ -86,7 +86,7 @@ func (c *MigaduClient) CreateAlias(ctx context.Context, domain string, alias *mo
 		return nil, fmt.Errorf("CreateAlias: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "aliases")
 	if err != nil {
 		return nil, fmt.Errorf("CreateAlias: %w", err)
 	}
@@ -128,7 +128,7 @@ func (c *MigaduClient) UpdateAlias(ctx context.Context, domain string, localPart
 		return nil, fmt.Errorf("UpdateAlias: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateAlias: %w", err)
 	}
@@ -170,7 +170,7 @@ func (c *MigaduClient) DeleteAlias(ctx context.Context, domain string, localPart
 		return nil, fmt.Errorf("DeleteAlias: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
 	if err != nil {
 		return nil, fmt.Errorf("DeleteAlias: %w", err)
 	}

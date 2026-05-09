@@ -16,11 +16,11 @@ import (
 
 // MigaduClient holds all necessary information to interact with the Migadu API
 type MigaduClient struct {
-	HTTPClient  *http.Client
-	Endpoint    string
-	Username    string
-	Token       string
-	RateLimiter *rate.Limiter
+	httpClient  *http.Client
+	endpoint    string
+	username    string
+	token       string
+	rateLimiter *rate.Limiter
 }
 
 // Option is a functional option for configuring a MigaduClient.
@@ -34,7 +34,7 @@ type Option func(*MigaduClient)
 // Example: WithRateLimit(60, 2*time.Minute) permits 60 requests every 2 minutes.
 func WithRateLimit(rateLimit int, rateInterval time.Duration) Option {
 	return func(c *MigaduClient) {
-		c.RateLimiter = rate.NewLimiter(rate.Every(rateInterval/time.Duration(rateLimit)), rateLimit)
+		c.rateLimiter = rate.NewLimiter(rate.Every(rateInterval/time.Duration(rateLimit)), rateLimit)
 	}
 }
 
@@ -54,14 +54,14 @@ func New(endpoint, username, token *string, timeout time.Duration, opts ...Optio
 	}
 
 	c := MigaduClient{
-		HTTPClient: &http.Client{Timeout: timeout},
-		Endpoint:   "https://api.migadu.com/v1/",
-		Username:   *username,
-		Token:      *token,
+		httpClient: &http.Client{Timeout: timeout},
+		endpoint:   "https://api.migadu.com/v1/",
+		username:   *username,
+		token:      *token,
 	}
 
 	if endpoint != nil {
-		c.Endpoint = *endpoint
+		c.endpoint = *endpoint
 	}
 
 	for _, opt := range opts {
@@ -72,17 +72,17 @@ func New(endpoint, username, token *string, timeout time.Duration, opts ...Optio
 }
 
 func (c *MigaduClient) doRequest(req *http.Request) ([]byte, error) {
-	if c.RateLimiter != nil {
-		err := c.RateLimiter.Wait(req.Context())
+	if c.rateLimiter != nil {
+		err := c.rateLimiter.Wait(req.Context())
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	req.SetBasicAuth(c.Username, c.Token)
+	req.SetBasicAuth(c.username, c.token)
 	req.Header.Add("Content-Type", "application/json")
 
-	res, err := c.HTTPClient.Do(req)
+	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

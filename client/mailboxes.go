@@ -24,7 +24,7 @@ func (c *MigaduClient) GetMailboxes(ctx context.Context, domain string) (*model.
 		return nil, fmt.Errorf("GetMailboxes: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes")
 	if err != nil {
 		return nil, fmt.Errorf("GetMailboxes: %w", err)
 	}
@@ -55,7 +55,7 @@ func (c *MigaduClient) GetMailbox(ctx context.Context, domain string, localPart 
 		return nil, fmt.Errorf("GetMailbox: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
 	if err != nil {
 		return nil, fmt.Errorf("GetMailbox: %w", err)
 	}
@@ -86,7 +86,7 @@ func (c *MigaduClient) CreateMailbox(ctx context.Context, domain string, mailbox
 		return nil, fmt.Errorf("CreateMailbox: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes")
 	if err != nil {
 		return nil, fmt.Errorf("CreateMailbox: %w", err)
 	}
@@ -140,7 +140,7 @@ func (c *MigaduClient) UpdateMailbox(ctx context.Context, domain string, localPa
 		return nil, fmt.Errorf("UpdateMailbox: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateMailbox: %w", err)
 	}
@@ -194,7 +194,7 @@ func (c *MigaduClient) DeleteMailbox(ctx context.Context, domain string, localPa
 		return nil, fmt.Errorf("DeleteMailbox: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
 	if err != nil {
 		return nil, fmt.Errorf("DeleteMailbox: %w", err)
 	}
