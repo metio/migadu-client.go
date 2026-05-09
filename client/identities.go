@@ -13,6 +13,7 @@ import (
 	"github.com/metio/migadu-client.go/model"
 	"golang.org/x/net/idna"
 	"net/http"
+	"net/url"
 )
 
 // GetIdentities returns identities for a single mailbox
@@ -22,9 +23,12 @@ func (c *MigaduClient) GetIdentities(ctx context.Context, domain string, localPa
 		return nil, fmt.Errorf("GetIdentities: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s/identities", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
+	if err != nil {
+		return nil, fmt.Errorf("GetIdentities: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetIdentities: %w", err)
 	}
@@ -50,9 +54,12 @@ func (c *MigaduClient) GetIdentity(ctx context.Context, domain string, localPart
 		return nil, fmt.Errorf("GetIdentity: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s/identities/%s", c.Endpoint, ascii, localPart, id)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
+	if err != nil {
+		return nil, fmt.Errorf("GetIdentity: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetIdentity: %w", err)
 	}
@@ -78,14 +85,17 @@ func (c *MigaduClient) CreateIdentity(ctx context.Context, domain string, localP
 		return nil, fmt.Errorf("CreateIdentity: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s/identities", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
+	if err != nil {
+		return nil, fmt.Errorf("CreateIdentity: %w", err)
+	}
 
 	requestBody, err := json.Marshal(identity)
 	if err != nil {
 		return nil, fmt.Errorf("CreateIdentity: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("CreateIdentity: %w", err)
 	}
@@ -111,14 +121,17 @@ func (c *MigaduClient) UpdateIdentity(ctx context.Context, domain string, localP
 		return nil, fmt.Errorf("UpdateIdentity: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s/identities/%s", c.Endpoint, ascii, localPart, id)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
+	if err != nil {
+		return nil, fmt.Errorf("UpdateIdentity: %w", err)
+	}
 
 	requestBody, err := json.Marshal(identity)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateIdentity: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPut, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateIdentity: %w", err)
 	}
@@ -144,9 +157,12 @@ func (c *MigaduClient) DeleteIdentity(ctx context.Context, domain string, localP
 		return nil, fmt.Errorf("DeleteIdentity: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s/identities/%s", c.Endpoint, ascii, localPart, id)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
+	if err != nil {
+		return nil, fmt.Errorf("DeleteIdentity: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("DeleteIdentity: %w", err)
 	}

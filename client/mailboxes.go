@@ -14,6 +14,7 @@ import (
 	"github.com/metio/migadu-client.go/model"
 	"golang.org/x/net/idna"
 	"net/http"
+	"net/url"
 )
 
 // GetMailboxes returns mailboxes for a single domain
@@ -23,9 +24,12 @@ func (c *MigaduClient) GetMailboxes(ctx context.Context, domain string) (*model.
 		return nil, fmt.Errorf("GetMailboxes: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes", c.Endpoint, ascii)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes")
+	if err != nil {
+		return nil, fmt.Errorf("GetMailboxes: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetMailboxes: %w", err)
 	}
@@ -51,9 +55,12 @@ func (c *MigaduClient) GetMailbox(ctx context.Context, domain string, localPart 
 		return nil, fmt.Errorf("GetMailbox: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
+	if err != nil {
+		return nil, fmt.Errorf("GetMailbox: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetMailbox: %w", err)
 	}
@@ -79,7 +86,10 @@ func (c *MigaduClient) CreateMailbox(ctx context.Context, domain string, mailbox
 		return nil, fmt.Errorf("CreateMailbox: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes", c.Endpoint, ascii)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes")
+	if err != nil {
+		return nil, fmt.Errorf("CreateMailbox: %w", err)
+	}
 
 	if mailbox != nil {
 		senderDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderDenyList)
@@ -104,7 +114,7 @@ func (c *MigaduClient) CreateMailbox(ctx context.Context, domain string, mailbox
 		return nil, fmt.Errorf("CreateMailbox: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("CreateMailbox: %w", err)
 	}
@@ -130,7 +140,10 @@ func (c *MigaduClient) UpdateMailbox(ctx context.Context, domain string, localPa
 		return nil, fmt.Errorf("UpdateMailbox: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
+	if err != nil {
+		return nil, fmt.Errorf("UpdateMailbox: %w", err)
+	}
 
 	if mailbox != nil {
 		senderDenyListASCII, err := idn.ConvertEmailsToASCII(mailbox.SenderDenyList)
@@ -155,7 +168,7 @@ func (c *MigaduClient) UpdateMailbox(ctx context.Context, domain string, localPa
 		return nil, fmt.Errorf("UpdateMailbox: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPut, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateMailbox: %w", err)
 	}
@@ -181,9 +194,12 @@ func (c *MigaduClient) DeleteMailbox(ctx context.Context, domain string, localPa
 		return nil, fmt.Errorf("DeleteMailbox: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/mailboxes/%s", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart))
+	if err != nil {
+		return nil, fmt.Errorf("DeleteMailbox: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("DeleteMailbox: %w", err)
 	}

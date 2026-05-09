@@ -14,6 +14,7 @@ import (
 	"github.com/metio/migadu-client.go/model"
 	"golang.org/x/net/idna"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -29,9 +30,12 @@ func (c *MigaduClient) GetRewriteRules(ctx context.Context, domain string) (*mod
 		return nil, fmt.Errorf("GetRewriteRules: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/rewrites", c.Endpoint, ascii)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites")
+	if err != nil {
+		return nil, fmt.Errorf("GetRewriteRules: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetRewriteRules: %w", err)
 	}
@@ -57,9 +61,12 @@ func (c *MigaduClient) GetRewriteRule(ctx context.Context, domain string, slug s
 		return nil, fmt.Errorf("GetRewriteRule: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/rewrites/%s", c.Endpoint, ascii, slug)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
+	if err != nil {
+		return nil, fmt.Errorf("GetRewriteRule: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetRewriteRule: %w", err)
 	}
@@ -85,7 +92,10 @@ func (c *MigaduClient) CreateRewriteRule(ctx context.Context, domain string, rew
 		return nil, fmt.Errorf("CreateRewriteRule: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/rewrites", c.Endpoint, ascii)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites")
+	if err != nil {
+		return nil, fmt.Errorf("CreateRewriteRule: %w", err)
+	}
 
 	var requestBody []byte
 	if rewrite != nil {
@@ -101,7 +111,7 @@ func (c *MigaduClient) CreateRewriteRule(ctx context.Context, domain string, rew
 		}
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("CreateRewriteRule: %w", err)
 	}
@@ -127,7 +137,10 @@ func (c *MigaduClient) UpdateRewriteRule(ctx context.Context, domain string, slu
 		return nil, fmt.Errorf("UpdateRewriteRule: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/rewrites/%s", c.Endpoint, ascii, slug)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
+	if err != nil {
+		return nil, fmt.Errorf("UpdateRewriteRule: %w", err)
+	}
 
 	var requestBody []byte
 	if rewrite != nil {
@@ -143,7 +156,7 @@ func (c *MigaduClient) UpdateRewriteRule(ctx context.Context, domain string, slu
 		}
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPut, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRewriteRule: %w", err)
 	}
@@ -169,9 +182,12 @@ func (c *MigaduClient) DeleteRewriteRule(ctx context.Context, domain string, slu
 		return nil, fmt.Errorf("DeleteRewriteRule: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/rewrites/%s", c.Endpoint, ascii, slug)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
+	if err != nil {
+		return nil, fmt.Errorf("DeleteRewriteRule: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("DeleteRewriteRule: %w", err)
 	}

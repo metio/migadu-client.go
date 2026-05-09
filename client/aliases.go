@@ -14,6 +14,7 @@ import (
 	"github.com/metio/migadu-client.go/model"
 	"golang.org/x/net/idna"
 	"net/http"
+	"net/url"
 )
 
 // GetAliases returns all aliases for a single domain
@@ -23,9 +24,12 @@ func (c *MigaduClient) GetAliases(ctx context.Context, domain string) (*model.Al
 		return nil, fmt.Errorf("GetAliases: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/aliases", c.Endpoint, ascii)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases")
+	if err != nil {
+		return nil, fmt.Errorf("GetAliases: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetAliases: %w", err)
 	}
@@ -51,9 +55,12 @@ func (c *MigaduClient) GetAlias(ctx context.Context, domain string, localPart st
 		return nil, fmt.Errorf("GetAlias: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/aliases/%s", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
+	if err != nil {
+		return nil, fmt.Errorf("GetAlias: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("GetAlias: %w", err)
 	}
@@ -79,7 +86,10 @@ func (c *MigaduClient) CreateAlias(ctx context.Context, domain string, alias *mo
 		return nil, fmt.Errorf("CreateAlias: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/aliases", c.Endpoint, ascii)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases")
+	if err != nil {
+		return nil, fmt.Errorf("CreateAlias: %w", err)
+	}
 
 	asciiEmails, err := idn.ConvertEmailsToASCII(alias.Destinations)
 	if err != nil {
@@ -92,7 +102,7 @@ func (c *MigaduClient) CreateAlias(ctx context.Context, domain string, alias *mo
 		return nil, fmt.Errorf("CreateAlias: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("CreateAlias: %w", err)
 	}
@@ -118,7 +128,10 @@ func (c *MigaduClient) UpdateAlias(ctx context.Context, domain string, localPart
 		return nil, fmt.Errorf("UpdateAlias: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/aliases/%s", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
+	if err != nil {
+		return nil, fmt.Errorf("UpdateAlias: %w", err)
+	}
 
 	asciiEmails, err := idn.ConvertEmailsToASCII(alias.Destinations)
 	if err != nil {
@@ -131,7 +144,7 @@ func (c *MigaduClient) UpdateAlias(ctx context.Context, domain string, localPart
 		return nil, fmt.Errorf("UpdateAlias: %w", err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPut, reqURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateAlias: %w", err)
 	}
@@ -157,9 +170,12 @@ func (c *MigaduClient) DeleteAlias(ctx context.Context, domain string, localPart
 		return nil, fmt.Errorf("DeleteAlias: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/domains/%s/aliases/%s", c.Endpoint, ascii, localPart)
+	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "aliases", url.PathEscape(localPart))
+	if err != nil {
+		return nil, fmt.Errorf("DeleteAlias: %w", err)
+	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqURL, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("DeleteAlias: %w", err)
 	}
