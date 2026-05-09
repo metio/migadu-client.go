@@ -101,7 +101,7 @@ func (c *MigaduClient) CreateRewriteRule(ctx context.Context, domain string, rew
 	if rewrite != nil {
 		asciiEmails, err := idn.ConvertEmailsToASCII(rewrite.Destinations)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("CreateRewriteRule: %w", err)
 		}
 		rewrite.Destinations = asciiEmails
 
@@ -146,7 +146,7 @@ func (c *MigaduClient) UpdateRewriteRule(ctx context.Context, domain string, slu
 	if rewrite != nil {
 		asciiEmails, err := idn.ConvertEmailsToASCII(rewrite.Destinations)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("UpdateRewriteRule: %w", err)
 		}
 		rewrite.Destinations = asciiEmails
 

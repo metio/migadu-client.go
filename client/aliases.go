@@ -93,7 +93,7 @@ func (c *MigaduClient) CreateAlias(ctx context.Context, domain string, alias *mo
 
 	asciiEmails, err := idn.ConvertEmailsToASCII(alias.Destinations)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("CreateAlias: %w", err)
 	}
 	alias.Destinations = asciiEmails
 
@@ -135,7 +135,7 @@ func (c *MigaduClient) UpdateAlias(ctx context.Context, domain string, localPart
 
 	asciiEmails, err := idn.ConvertEmailsToASCII(alias.Destinations)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("UpdateAlias: %w", err)
 	}
 	alias.Destinations = asciiEmails
 
