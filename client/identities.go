@@ -23,7 +23,7 @@ func (c *MigaduClient) GetIdentities(ctx context.Context, domain string, localPa
 		return nil, fmt.Errorf("GetIdentities: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
 	if err != nil {
 		return nil, fmt.Errorf("GetIdentities: %w", err)
 	}
@@ -54,7 +54,7 @@ func (c *MigaduClient) GetIdentity(ctx context.Context, domain string, localPart
 		return nil, fmt.Errorf("GetIdentity: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
 	if err != nil {
 		return nil, fmt.Errorf("GetIdentity: %w", err)
 	}
@@ -85,7 +85,7 @@ func (c *MigaduClient) CreateIdentity(ctx context.Context, domain string, localP
 		return nil, fmt.Errorf("CreateIdentity: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities")
 	if err != nil {
 		return nil, fmt.Errorf("CreateIdentity: %w", err)
 	}
@@ -121,7 +121,7 @@ func (c *MigaduClient) UpdateIdentity(ctx context.Context, domain string, localP
 		return nil, fmt.Errorf("UpdateIdentity: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateIdentity: %w", err)
 	}
@@ -157,7 +157,7 @@ func (c *MigaduClient) DeleteIdentity(ctx context.Context, domain string, localP
 		return nil, fmt.Errorf("DeleteIdentity: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "mailboxes", url.PathEscape(localPart), "identities", url.PathEscape(id))
 	if err != nil {
 		return nil, fmt.Errorf("DeleteIdentity: %w", err)
 	}

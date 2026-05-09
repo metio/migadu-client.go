@@ -30,7 +30,7 @@ func (c *MigaduClient) GetRewriteRules(ctx context.Context, domain string) (*mod
 		return nil, fmt.Errorf("GetRewriteRules: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "rewrites")
 	if err != nil {
 		return nil, fmt.Errorf("GetRewriteRules: %w", err)
 	}
@@ -61,7 +61,7 @@ func (c *MigaduClient) GetRewriteRule(ctx context.Context, domain string, slug s
 		return nil, fmt.Errorf("GetRewriteRule: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
 	if err != nil {
 		return nil, fmt.Errorf("GetRewriteRule: %w", err)
 	}
@@ -92,7 +92,7 @@ func (c *MigaduClient) CreateRewriteRule(ctx context.Context, domain string, rew
 		return nil, fmt.Errorf("CreateRewriteRule: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites")
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "rewrites")
 	if err != nil {
 		return nil, fmt.Errorf("CreateRewriteRule: %w", err)
 	}
@@ -137,7 +137,7 @@ func (c *MigaduClient) UpdateRewriteRule(ctx context.Context, domain string, slu
 		return nil, fmt.Errorf("UpdateRewriteRule: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRewriteRule: %w", err)
 	}
@@ -182,7 +182,7 @@ func (c *MigaduClient) DeleteRewriteRule(ctx context.Context, domain string, slu
 		return nil, fmt.Errorf("DeleteRewriteRule: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(c.Endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
+	reqURL, err := url.JoinPath(c.endpoint, "domains", ascii, "rewrites", url.PathEscape(slug))
 	if err != nil {
 		return nil, fmt.Errorf("DeleteRewriteRule: %w", err)
 	}
