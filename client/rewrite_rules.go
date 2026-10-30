@@ -8,12 +8,13 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/metio/migadu-client.go/idn"
-	"github.com/metio/migadu-client.go/model"
-	"golang.org/x/net/idna"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/metio/migadu-client.go/idn"
+	"github.com/metio/migadu-client.go/model"
+	"golang.org/x/net/idna"
 )
 
 type rewriteRuleJson struct {

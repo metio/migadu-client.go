@@ -6,8 +6,9 @@
 package client_test
 
 import (
-	"github.com/metio/migadu-client.go/client"
 	"time"
+
+	"github.com/metio/migadu-client.go/client"
 )
 
 func newTestClient(endpoint string) *client.MigaduClient {

@@ -7,8 +7,9 @@ package idn
 
 import (
 	"fmt"
-	"golang.org/x/net/idna"
 	"strings"
+
+	"golang.org/x/net/idna"
 )
 
 // ConvertEmailToASCII converts the domain name of an email address to its punycode representation
@@ -43,5 +44,4 @@ func convertEmailWith(email string, converter func(string) (string, error)) (str
 		return "", err
 	}
 	return fmt.Sprintf("%s@%s", parts[0], converted), nil
-
 }

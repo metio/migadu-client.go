@@ -11,12 +11,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/time/rate"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"golang.org/x/time/rate"
 )
 
 const defaultUserAgent = "migadu-client.go"
@@ -248,7 +249,7 @@ func (e *RequestError) Error() string {
 // endpoint via url.JoinPath; callers are responsible for url.PathEscape on
 // any user-controlled segments.
 func do[T any](ctx context.Context, c *MigaduClient, label, method string, body any, pathSegments ...string) (*T, error) {
-	reqURL, err := url.JoinPath(c.endpoint, pathSegments...)
+	reqURL, err := url.JoinPath(c.endpoint, pathSegments...) // #nosec G125 -- callers escape user-controlled segments
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", label, err)
 	}

@@ -8,13 +8,14 @@ package simulator
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/metio/migadu-client.go/idn"
-	"github.com/metio/migadu-client.go/model"
-	"golang.org/x/net/idna"
 	"io"
 	"net/http"
 	"regexp"
 	"testing"
+
+	"github.com/metio/migadu-client.go/idn"
+	"github.com/metio/migadu-client.go/model"
+	"golang.org/x/net/idna"
 )
 
 var aliasesUrlPattern = regexp.MustCompile("/domains/(.*)/aliases/?(.*)?")

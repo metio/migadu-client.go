@@ -8,10 +8,11 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/metio/migadu-client.go/model"
-	"golang.org/x/net/idna"
 	"net/http"
 	"net/url"
+
+	"github.com/metio/migadu-client.go/model"
+	"golang.org/x/net/idna"
 )
 
 // GetIdentities returns identities for a single mailbox

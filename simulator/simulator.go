@@ -6,9 +6,10 @@
 package simulator
 
 import (
-	"github.com/metio/migadu-client.go/model"
 	"net/http"
 	"testing"
+
+	"github.com/metio/migadu-client.go/model"
 )
 
 // State is the optional state of the Migadu API. Use this to populate the simulator before a test.

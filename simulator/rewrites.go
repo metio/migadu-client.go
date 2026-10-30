@@ -8,12 +8,13 @@ package simulator
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/metio/migadu-client.go/model"
 	"io"
 	"net/http"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/metio/migadu-client.go/model"
 )
 
 var rewritesPattern = regexp.MustCompile("/domains/(.*)/rewrites/?(.*)?")

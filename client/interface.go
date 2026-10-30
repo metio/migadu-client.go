@@ -7,6 +7,7 @@ package client
 
 import (
 	"context"
+
 	"github.com/metio/migadu-client.go/model"
 )
 

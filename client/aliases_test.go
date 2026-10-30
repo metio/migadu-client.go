@@ -7,12 +7,13 @@ package client_test
 
 import (
 	"context"
-	"github.com/metio/migadu-client.go/model"
-	"github.com/metio/migadu-client.go/simulator"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
+
+	"github.com/metio/migadu-client.go/model"
+	"github.com/metio/migadu-client.go/simulator"
 )
 
 func TestMigaduClient_GetAliases(t *testing.T) {

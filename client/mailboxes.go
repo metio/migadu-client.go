@@ -8,11 +8,12 @@ package client
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/url"
+
 	"github.com/metio/migadu-client.go/idn"
 	"github.com/metio/migadu-client.go/model"
 	"golang.org/x/net/idna"
-	"net/http"
-	"net/url"
 )
 
 // GetMailboxes returns mailboxes for a single domain

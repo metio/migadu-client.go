@@ -8,11 +8,12 @@ package simulator
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/metio/migadu-client.go/model"
 	"io"
 	"net/http"
 	"regexp"
 	"testing"
+
+	"github.com/metio/migadu-client.go/model"
 )
 
 var mailboxesPattern = regexp.MustCompile("/domains/(.*)/mailboxes/?(.*)?")
