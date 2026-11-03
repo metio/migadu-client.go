@@ -9,11 +9,12 @@ authors:
 - family-names: Hoß
   given-names: Sebastian
   email: seb@hoß.de
-url: https://github.com/metio/migadu-client.go
+url: https://github.com/metio/migadu-client.go/
 license: 0BSD
 keywords:
   - client
   - email
   - go
+  - golang
   - make
   - migadu
