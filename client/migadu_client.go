@@ -223,10 +223,7 @@ func computeBackoff(attempt int, retryAfter, max time.Duration) time.Duration {
 		}
 		return retryAfter
 	}
-	shift := attempt - 1
-	if shift > 30 {
-		shift = 30
-	}
+	shift := min(attempt-1, 30)
 	backoff := 500 * time.Millisecond << shift
 	if backoff > max {
 		return max
