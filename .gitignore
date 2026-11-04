@@ -21,5 +21,3 @@
 go.work
 go.work.sum
 http/http-client.private.env.json
-.cache/
-.config/
